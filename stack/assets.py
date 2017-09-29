@@ -1,6 +1,6 @@
 import os
 
-from troposphere import GetAtt, If, Join, Output, Ref, Split, iam
+from troposphere import GetAtt, If, Join, Output, Parameter, Ref, Split, iam
 from troposphere.cloudfront import (
     DefaultCacheBehavior,
     Distribution,
@@ -122,11 +122,20 @@ assets_management_policy = iam.Policy(
 
 
 if os.environ.get('USE_GOVCLOUD') != 'on':
+    # Allow alternate CNAMEs for CloudFront distributions
+    distribution_aliases = Ref(template.add_parameter(Parameter(
+        "DistributionAliases",
+        Description="A comma-separated list of CNAMEs (alternate domain names), if any, for the "
+                    "CloudFront distribution, e.g. static.mydomain.com",
+        Type="CommaDelimitedList",
+    )))
+
     # Create a CloudFront CDN distribution
     distribution = template.add_resource(
         Distribution(
             'AssetsDistribution',
             DistributionConfig=DistributionConfig(
+                Aliases=distribution_aliases,
                 Origins=[Origin(
                     Id="Assets",
                     DomainName=GetAtt(assets_bucket, "DomainName"),
