@@ -1,13 +1,14 @@
 import os
 
-from troposphere import GetAtt, If, Join, Output, Parameter, Ref, Split, iam
+from troposphere import GetAtt, Equals, If, Join, Output, Parameter, Ref, Split, iam
 from troposphere.cloudfront import (
     DefaultCacheBehavior,
     Distribution,
     DistributionConfig,
     ForwardedValues,
     Origin,
-    S3Origin
+    S3Origin,
+    ViewerCertificate
 )
 from troposphere.s3 import (
     Bucket,
@@ -159,6 +160,72 @@ if os.environ.get('USE_GOVCLOUD') != 'on':
                     ViewerProtocolPolicy="allow-all",
                 ),
                 Enabled=True
+            ),
+        )
+    )
+
+    media_distribution_alias = Ref(template.add_parameter(Parameter(
+        "MediaDistributionAlias",
+        Description="Optional CNAME (alternate domain name) for the PrivateAssetsBucket's "
+                    "CloudFront distribution, e.g. media.mydomain.com",
+        Type="String",
+    )))
+    no_media_distribution_alias = "NoMediaDistributionAlias"
+    template.add_condition(
+        no_media_distribution_alias,
+        Equals(media_distribution_alias, ""),
+    )
+
+    # Currently, you can specify only certificates that are in the US East (N. Virginia) region.
+    # http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distributionconfig-viewercertificate.html
+    media_acm_certificate_arn = Ref(template.add_parameter(Parameter(
+        "MediaAcmCertificateArn",
+        Description="If you're using MediaDistributionAlias, enter the Amazon Resource Name (ARN) "
+                    "of an AWS Certificate Manager (ACM) certificate from US East (N. Virginia).",
+        Type="String",
+    )))
+    no_media_acm_certificate_arn = "NoMediaDistributionAlias"
+    template.add_condition(
+        no_media_acm_certificate_arn,
+        Equals(media_acm_certificate_arn, ""),
+    )
+
+    media_distribution = template.add_resource(
+        Distribution(
+            'MediaAssetsDistribution',
+            DistributionConfig=DistributionConfig(
+                Aliases=If(no_media_distribution_alias, Ref("AWS::NoValue"), [media_distribution_alias]),
+                Origins=[Origin(
+                    Id="Assets",
+                    DomainName=GetAtt(private_assets_bucket, "DomainName"),
+                    S3OriginConfig=S3Origin(
+                        OriginAccessIdentity="",
+                    ),
+                )],
+                DefaultCacheBehavior=DefaultCacheBehavior(
+                    TargetOriginId="Assets",
+                    ForwardedValues=ForwardedValues(
+                        # Cache results *should* vary based on querystring (e.g., 'style.css?v=3')
+                        QueryString=True,
+                        # make sure headers needed by CORS policy above get through to S3
+                        # http://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/header-caching.html#header-caching-web-cors
+                        Headers=[
+                            'Origin',
+                            'Access-Control-Request-Headers',
+                            'Access-Control-Request-Method',
+                        ],
+                    ),
+                    ViewerProtocolPolicy="allow-all",
+                ),
+                Enabled=True,
+                ViewerCertificate=If(
+                                        no_media_acm_certificate_arn,
+                                        Ref("AWS::NoValue"),
+                                        ViewerCertificate(
+                                            AcmCertificateArn=media_acm_certificate_arn,
+                                            SslSupportMethod='sni-only',
+                                        )
+                ),
             ),
         )
     )
