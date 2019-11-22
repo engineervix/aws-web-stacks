@@ -1,4 +1,12 @@
-from troposphere import AWS_STACK_NAME, Equals, Join, Ref, autoscaling, iam
+from troposphere import (
+    AWS_STACK_NAME,
+    Equals,
+    Join,
+    Output,
+    Ref,
+    autoscaling,
+    iam
+)
 
 from .assets import assets_management_policy
 from .common import container_instance_type, use_aes256_encryption
@@ -145,3 +153,10 @@ autoscaling_group = autoscaling.AutoScalingGroup(
         },
     ],
 )
+
+# Output ASG name
+template.add_output(Output(
+    "AutoScalingGroupName",
+    Description="The application autoscaling group name",
+    Value=Ref(autoscaling_group),
+))
