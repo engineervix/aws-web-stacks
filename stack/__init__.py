@@ -74,3 +74,4 @@ for parm in parms_used:
     print("#\t%s = %s" % (parm, os.environ[parm]))
 print()
 print(template.template.to_yaml())
+# print(template.template.to_json())
