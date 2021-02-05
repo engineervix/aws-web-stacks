@@ -80,6 +80,7 @@ ssh_cidr = template.add_parameter(
 )
 
 # "20.04 / 18.04 hvm ssd" AMIs from https://cloud-images.ubuntu.com/locator/ec2/
+# "Debian Buster hvm ssd" AMIs from https://wiki.debian.org/Cloud/AmazonEC2Image/Buster
 template.add_mapping(
     "RegionMap",
     {
