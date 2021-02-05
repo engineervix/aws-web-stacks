@@ -21,7 +21,8 @@ if not USE_EKS:
                 FromPort=port,
                 ToPort=port,
                 CidrIp="0.0.0.0/0",
-            ) for port in ["80", "443"]
+            )
+            for port in ["80", "443"]
         ],
         Tags=Tags(
             Name=Join("-", [Ref("AWS::StackName"), "elb"]),
@@ -42,38 +43,45 @@ if not USE_EKS:
         web_worker_ports = ["80"]
 
     # HTTP from web load balancer
-    ingress_rules = [SecurityGroupRule(
-        IpProtocol="tcp",
-        FromPort=port,
-        ToPort=port,
-        SourceSecurityGroupId=Ref(load_balancer_security_group),
-    ) for port in web_worker_ports]
+    ingress_rules = [
+        SecurityGroupRule(
+            IpProtocol="tcp",
+            FromPort=port,
+            ToPort=port,
+            SourceSecurityGroupId=Ref(load_balancer_security_group),
+        )
+        for port in web_worker_ports
+    ]
 
     # Health check
     if not USE_EB:
-        ingress_rules.append(SecurityGroupRule(
-            IpProtocol="tcp",
-            FromPort=Ref("WebWorkerHealthCheckPort"),
-            ToPort=Ref("WebWorkerHealthCheckPort"),
-            Description="ELB Health Check",  # SecurityGroupRule doesn't support a Description attribute
-            SourceSecurityGroupId=Ref(load_balancer_security_group),
-        ))
+        ingress_rules.append(
+            SecurityGroupRule(
+                IpProtocol="tcp",
+                # FromPort=Ref("WebWorkerHealthCheckPort"),
+                # ToPort=Ref("WebWorkerHealthCheckPort"),
+                Description="ELB Health Check",  # SecurityGroupRule doesn't support a Description attribute
+                SourceSecurityGroupId=Ref(load_balancer_security_group),
+            )
+        )
 
     if not USE_NAT_GATEWAY:
         # Allow direct administrator access via SSH.
-        ingress_rules.append(SecurityGroupRule(
-            IpProtocol="tcp",
-            FromPort="22",
-            ToPort="22",
-            Description="Administrator SSH Access",
-            CidrIp=administrator_ip_address,
-        ))
+        ingress_rules.append(
+            SecurityGroupRule(
+                IpProtocol="tcp",
+                FromPort="22",
+                ToPort="22",
+                Description="Administrator SSH Access",
+                CidrIp=administrator_ip_address,
+            )
+        )
 else:
     ingress_rules = []
 
 container_security_group = SecurityGroup(
     # NOTE: If creating an EKS cluster, eks.py will modify this security group.
-    'ContainerSecurityGroup',
+    "ContainerSecurityGroup",
     template=template,
     GroupDescription="Container security group.",
     VpcId=Ref(vpc),

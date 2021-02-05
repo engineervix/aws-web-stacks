@@ -7,7 +7,7 @@ from troposphere import (
     Parameter,
     Ref,
     Tags,
-    transfer
+    transfer,
 )
 
 from .common import use_aes256_encryption_cond, use_cmk_arn
@@ -49,11 +49,11 @@ template.add_condition(
 )
 
 
-transfer_server = transfer.Server(
-    "TransferServer",
-    template=template,
-    Condition=use_sftp_condition,
-    IdentityProviderType="SERVICE_MANAGED",
-    EndpointType="PUBLIC",
-    Tags=Tags(Name=Join("-", [Ref("AWS::StackName"), "sftp"])),
-)
+# transfer_server = transfer.Server(
+#     "TransferServer",
+#     template=template,
+#     Condition=use_sftp_condition,
+#     IdentityProviderType="SERVICE_MANAGED",
+#     EndpointType="PUBLIC",
+#     Tags=Tags(Name=Join("-", [Ref("AWS::StackName"), "sftp"])),
+# )
