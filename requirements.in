@@ -1,0 +1,7 @@
+awacs
+troposphere
+flake8
+isort
+sphinx
+black
+pip-tools
