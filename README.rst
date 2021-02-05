@@ -1,8 +1,8 @@
 AWS Web Stacks
 ==============
 
-.. image:: https://circleci.com/gh/caktus/aws-web-stacks.svg?style=svg
-    :target: https://circleci.com/gh/caktus/aws-web-stacks
+.. image:: https://circleci.com/gh/engineervix/aws-web-stacks.svg?style=svg
+    :target: https://circleci.com/gh/engineervix/aws-web-stacks
 
 AWS Web Stacks is a library of CloudFormation templates that dramatically simplify hosting web applications
 on AWS. The library supports using Elastic Beanstalk, ECS, EKS, EC2 instances (via an AMI you specify),
@@ -74,8 +74,8 @@ wish to use the YAML template directly:
 .. _ec2-nat.yaml: https://s3.amazonaws.com/aws-web-stacks/ec2-nat.yaml
 
 .. |Dokku-No-NAT| image:: https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png
-.. _Dokku-No-NAT: https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=dokku-no-nat&templateURL=https://s3.amazonaws.com/aws-web-stacks/dokku-no-nat.yaml
-.. _dokku-no-nat.yaml: https://s3.amazonaws.com/aws-web-stacks/dokku-no-nat.yaml
+.. _Dokku-No-NAT: https://console.aws.amazon.com/cloudformation/home?#/stacks/new?stackName=dokku-no-nat&templateURL=https://engineervix.github.io/aws-web-stacks/dokku-no-nat.yaml
+.. _dokku-no-nat.yaml: https://engineervix.github.io/aws-web-stacks/dokku-no-nat.yaml
 
 Documentation
 -------------
