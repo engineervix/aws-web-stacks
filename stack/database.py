@@ -13,15 +13,10 @@ from troposphere import (
     Ref,
     Tags,
     ec2,
-    rds
+    rds,
 )
 
-from .common import (
-    cmk_arn,
-    dont_create_value,
-    use_aes256_encryption,
-    use_cmk_arn
-)
+from .common import cmk_arn, dont_create_value, use_aes256_encryption, use_cmk_arn
 from .template import template
 from .utils import ParameterWithDefaults as Parameter
 from .vpc import (
@@ -29,66 +24,69 @@ from .vpc import (
     private_subnet_a_cidr,
     private_subnet_b,
     private_subnet_b_cidr,
-    vpc
+    vpc,
 )
 
-rds_engine_map = OrderedDict([
-    ("aurora", {"Port": "3306"}),
-    ("mariadb", {"Port": "3306"}),
-    ("mysql", {"Port": "3306"}),
-    ("oracle-ee", {"Port": "1521"}),
-    ("oracle-se2", {"Port": "1521"}),
-    ("oracle-se1", {"Port": "1521"}),
-    ("oracle-se", {"Port": "1521"}),
-    ("postgres", {"Port": "5432"}),
-    ("sqlserver-ee", {"Port": "1433"}),
-    ("sqlserver-se", {"Port": "1433"}),
-    ("sqlserver-ex", {"Port": "1433"}),
-    ("sqlserver-web", {"Port": "1433"}),
-])
-template.add_mapping('RdsEngineMap', rds_engine_map)
+rds_engine_map = OrderedDict(
+    [
+        ("aurora", {"Port": "3306"}),
+        ("mariadb", {"Port": "3306"}),
+        ("mysql", {"Port": "3306"}),
+        ("oracle-ee", {"Port": "1521"}),
+        ("oracle-se2", {"Port": "1521"}),
+        ("oracle-se1", {"Port": "1521"}),
+        ("oracle-se", {"Port": "1521"}),
+        ("postgres", {"Port": "5432"}),
+        ("sqlserver-ee", {"Port": "1433"}),
+        ("sqlserver-se", {"Port": "1433"}),
+        ("sqlserver-ex", {"Port": "1433"}),
+        ("sqlserver-web", {"Port": "1433"}),
+    ]
+)
+template.add_mapping("RdsEngineMap", rds_engine_map)
 
 db_class = template.add_parameter(
     Parameter(
         "DatabaseClass",
-        Default="db.t2.micro",
+        Default="db.t3.micro",
         Description="Database instance class",
         Type="String",
         AllowedValues=[
             dont_create_value,
-            'db.t1.micro',
-            'db.m1.small',
-            'db.m4.large',
-            'db.m4.xlarge',
-            'db.m4.2xlarge',
-            'db.m4.4xlarge',
-            'db.m4.10xlarge',
-            'db.r4.large',
-            'db.r4.xlarge',
-            'db.r4.2xlarge',
-            'db.r4.4xlarge',
-            'db.r4.8xlarge',
-            'db.r4.16xlarge',
-            'db.r3.large',
-            'db.r3.xlarge',
-            'db.r3.2xlarge',
-            'db.r3.4xlarge',
-            'db.r3.8xlarge',
-            'db.t2.micro',
-            'db.t2.small',
-            'db.t2.medium',
-            'db.t2.large',
-            'db.m3.medium',
-            'db.m3.large',
-            'db.m3.xlarge',
-            'db.m3.2xlarge',
-            'db.m1.small',
-            'db.m1.medium',
-            'db.m1.large',
-            'db.m1.xlarge',
-            'db.m2.xlarge',
-            'db.m2.2xlarge',
-            'db.m2.4xlarge',
+            "db.t1.micro",
+            "db.m1.small",
+            "db.m4.large",
+            "db.m4.xlarge",
+            "db.m4.2xlarge",
+            "db.m4.4xlarge",
+            "db.m4.10xlarge",
+            "db.r4.large",
+            "db.r4.xlarge",
+            "db.r4.2xlarge",
+            "db.r4.4xlarge",
+            "db.r4.8xlarge",
+            "db.r4.16xlarge",
+            "db.r3.large",
+            "db.r3.xlarge",
+            "db.r3.2xlarge",
+            "db.r3.4xlarge",
+            "db.r3.8xlarge",
+            "db.t3.micro",
+            "db.t2.micro",
+            "db.t2.small",
+            "db.t2.medium",
+            "db.t2.large",
+            "db.m3.medium",
+            "db.m3.large",
+            "db.m3.xlarge",
+            "db.m3.2xlarge",
+            "db.m1.small",
+            "db.m1.medium",
+            "db.m1.large",
+            "db.m1.xlarge",
+            "db.m2.xlarge",
+            "db.m2.2xlarge",
+            "db.m2.4xlarge",
         ],
         ConstraintDescription="must select a valid database instance type.",
     ),
@@ -109,15 +107,12 @@ db_replication = template.add_parameter(
         "WARNING this will fail if DatabaseBackupRetentionDays is 0.",
     ),
     group="Database",
-    label="Database replication"
+    label="Database replication",
 )
 db_replication_condition = "DatabaseReplicationCondition"
 template.add_condition(
     db_replication_condition,
-    And(
-        Condition(db_condition),
-        Equals(Ref(db_replication), "true")
-    )
+    And(Condition(db_condition), Equals(Ref(db_replication), "true")),
 )
 
 db_engine = template.add_parameter(
@@ -194,7 +189,7 @@ db_parameter_group_family = template.add_parameter(
             "sqlserver-web-14.0",
         ],
         Description="Database parameter group family name; must match the engine and version of "
-                    "the RDS instance.",
+        "the RDS instance.",
     ),
     group="Database",
     label="Parameter Group Family",
@@ -219,9 +214,8 @@ db_name = template.add_parameter(
         MaxLength="64",
         AllowedPattern="[a-zA-Z][a-zA-Z0-9_]*",
         ConstraintDescription=(
-            "must begin with a letter and contain only"
-            " alphanumeric characters."
-        )
+            "must begin with a letter and contain only" " alphanumeric characters."
+        ),
     ),
     group="Database",
     label="Database Name",
@@ -239,7 +233,7 @@ db_user = template.add_parameter(
         ConstraintDescription=(
             "must begin with a letter and contain only"
             " alphanumeric characters and underscores."
-        )
+        ),
     ),
     group="Database",
     label="Username",
@@ -249,15 +243,15 @@ db_password = template.add_parameter(
     Parameter(
         "DatabasePassword",
         NoEcho=True,
-        Description=''
-        '''The database admin account password must consist of 10-41 printable'''
+        Description=""
+        """The database admin account password must consist of 10-41 printable"""
         '''ASCII characters *except* "/", """, or "@".''',
         Type="String",
         MinLength="10",
         MaxLength="41",
         AllowedPattern="[ !#-.0-?A-~]*",  # see http://www.catonmat.net/blog/my-favorite-regex/
         ConstraintDescription="must consist of 10-41 printable ASCII "
-                              "characters except \"/\", \"\"\", or \"@\"."
+        'characters except "/", """, or "@".',
     ),
     group="Database",
     label="Password",
@@ -290,7 +284,7 @@ db_multi_az = template.add_parameter(
         ConstraintDescription="must choose true or false.",
     ),
     group="Database",
-    label="Enable MultiAZ"
+    label="Enable MultiAZ",
 )
 
 db_backup_retention_days = template.add_parameter(
@@ -298,7 +292,7 @@ db_backup_retention_days = template.add_parameter(
         "DatabaseBackupRetentionDays",
         Default="30",
         Description="The number of days for which automated backups are retained. Setting to 0 "
-                    "disables automated backups.",
+        "disables automated backups.",
         Type="Number",
         AllowedValues=[str(x) for x in range(36)],  # 0-35 are the supported values
     ),
@@ -317,7 +311,7 @@ db_logging = template.add_parameter(
         # instance. Then, lowercase it and remove " log" from the type, i.e., "Postgresql log"
         # will be come "postgresql" for this parameter.
         Description="A comma-separated list of the RDS log types (if any) to publish to "
-                    "CloudWatch Logs. Note that log types are database engine-specific.",
+        "CloudWatch Logs. Note that log types are database engine-specific.",
         Type="CommaDelimitedList",
     ),
     group="Database",
@@ -325,10 +319,12 @@ db_logging = template.add_parameter(
 )
 
 db_logging_condition = "DatabaseLoggingCondition"
-template.add_condition(db_logging_condition, Not(Equals(Join(",", Ref(db_logging)), "")))
+template.add_condition(
+    db_logging_condition, Not(Equals(Join(",", Ref(db_logging)), ""))
+)
 
 db_security_group = ec2.SecurityGroup(
-    'DatabaseSecurityGroup',
+    "DatabaseSecurityGroup",
     template=template,
     GroupDescription="Database security group.",
     Condition=db_condition,
@@ -379,7 +375,9 @@ db_instance = rds.DBInstance(
     VPCSecurityGroups=[Ref(db_security_group)],
     DBParameterGroupName=Ref(db_parameter_group),
     BackupRetentionPeriod=Ref(db_backup_retention_days),
-    EnableCloudwatchLogsExports=If(db_logging_condition, Ref(db_logging), Ref("AWS::NoValue")),
+    EnableCloudwatchLogsExports=If(
+        db_logging_condition, Ref(db_logging), Ref("AWS::NoValue")
+    ),
     DeletionPolicy="Snapshot",
     KmsKeyId=If(use_cmk_arn, Ref(cmk_arn), Ref("AWS::NoValue")),
 )
@@ -396,77 +394,93 @@ db_replica = rds.DBInstance(
 
 db_url = If(
     db_condition,
-    Join("", [
-        Ref(db_engine),
-        "://",
-        Ref(db_user),
-        ":_PASSWORD_@",
-        GetAtt(db_instance, 'Endpoint.Address'),
-        ":",
-        GetAtt(db_instance, 'Endpoint.Port'),
-        "/",
-        Ref(db_name),
-    ]),
+    Join(
+        "",
+        [
+            Ref(db_engine),
+            "://",
+            Ref(db_user),
+            ":_PASSWORD_@",
+            GetAtt(db_instance, "Endpoint.Address"),
+            ":",
+            GetAtt(db_instance, "Endpoint.Port"),
+            "/",
+            Ref(db_name),
+        ],
+    ),
     "",  # defaults to empty string if no DB was created
 )
 
 db_replica_url = If(
     db_replication_condition,
-    Join("", [
-        Ref(db_engine),
-        "://",
-        Ref(db_user),
-        ":_PASSWORD_@",
-        GetAtt(db_replica, 'Endpoint.Address'),
-        ":",
-        GetAtt(db_replica, 'Endpoint.Port'),
-        "/",
-        Ref(db_name),
-    ]),
+    Join(
+        "",
+        [
+            Ref(db_engine),
+            "://",
+            Ref(db_user),
+            ":_PASSWORD_@",
+            GetAtt(db_replica, "Endpoint.Address"),
+            ":",
+            GetAtt(db_replica, "Endpoint.Port"),
+            "/",
+            Ref(db_name),
+        ],
+    ),
     "",  # defaults to empty string if no DB was created
 )
 
-template.add_output([
-    Output(
-        "DatabaseURL",
-        Description="URL to connect (without the password) to the database.",
-        Value=db_url,
-        Condition=db_condition,
-    ),
-])
+template.add_output(
+    [
+        Output(
+            "DatabaseURL",
+            Description="URL to connect (without the password) to the database.",
+            Value=db_url,
+            Condition=db_condition,
+        ),
+    ]
+)
 
-template.add_output([
-    Output(
-        "DatabaseReplicaURL",
-        Description="URL to connect (without the password) to the database replica.",
-        Value=db_replica_url,
-        Condition=db_replication_condition,
-    ),
-])
+template.add_output(
+    [
+        Output(
+            "DatabaseReplicaURL",
+            Description="URL to connect (without the password) to the database replica.",
+            Value=db_replica_url,
+            Condition=db_replication_condition,
+        ),
+    ]
+)
 
-template.add_output([
-    Output(
-        "DatabasePort",
-        Description="The port number on which the database accepts connections.",
-        Value=GetAtt(db_instance, 'Endpoint.Port'),
-        Condition=db_condition,
-    ),
-])
+template.add_output(
+    [
+        Output(
+            "DatabasePort",
+            Description="The port number on which the database accepts connections.",
+            Value=GetAtt(db_instance, "Endpoint.Port"),
+            Condition=db_condition,
+        ),
+    ]
+)
 
-template.add_output([
-    Output(
-        "DatabaseAddress",
-        Description="The connection endpoint for the database.",
-        Value=GetAtt(db_instance, 'Endpoint.Address'),
-        Condition=db_condition,
-    ),
-])
+template.add_output(
+    [
+        Output(
+            "DatabaseAddress",
+            Description="The connection endpoint for the database.",
+            Value=GetAtt(db_instance, "Endpoint.Address"),
+            Condition=db_condition,
+        ),
+    ]
+)
 
-template.add_output([
-    Output(
-        "DatabaseReplicaAddress",
-        Description="The connection endpoint for the database replica.",
-        Value=GetAtt(db_replica, "Endpoint.Address"),
-        Condition=db_replication_condition
-    ),
-])
+template.add_output(
+    [
+        Output(
+            "DatabaseReplicaAddress",
+            Description="The connection endpoint for the database replica.",
+            Value=GetAtt(db_replica, "Endpoint.Address"),
+            Condition=db_replication_condition,
+        ),
+    ]
+)

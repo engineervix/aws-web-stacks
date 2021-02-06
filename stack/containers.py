@@ -128,7 +128,7 @@ container_instance_type = Ref(
             "ContainerInstanceType",
             Description="The application server instance type",
             Type="String",
-            Default="t2.micro",
+            Default="t3.micro",
             AllowedValues=[
                 "t3.nano",
                 "t3.micro",

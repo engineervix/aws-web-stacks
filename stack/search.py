@@ -1,10 +1,6 @@
 from awacs.aws import Action, Allow, Policy, Principal, Statement
 from troposphere import Equals, GetAtt, Not, Output, Ref
-from troposphere.elasticsearch import (
-    Domain,
-    EBSOptions,
-    ElasticsearchClusterConfig
-)
+from troposphere.elasticsearch import Domain, EBSOptions, ElasticsearchClusterConfig
 
 from . import USE_EB
 from .common import dont_create_value
@@ -22,41 +18,42 @@ es_instance_type = template.add_parameter(
         "ElasticsearchInstanceType",
         Default=dont_create_value,
         Description="Elasticsearch instance type. Note: not all types are supported in all regions; see: "
-                    "http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/"
-                    "aes-supported-instance-types.html",
+        "http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/"
+        "aes-supported-instance-types.html",
         Type="String",
         AllowedValues=[
             dont_create_value,
-            't2.micro.elasticsearch',
-            't2.small.elasticsearch',
-            't2.medium.elasticsearch',
-            'm3.medium.elasticsearch',
-            'm3.large.elasticsearch',
-            'm3.xlarge.elasticsearch',
-            'm3.2xlarge.elasticsearch',
-            'm4.large.elasticsearch',
-            'm4.xlarge.elasticsearch',
-            'm4.2xlarge.elasticsearch',
-            'm4.4xlarge.elasticsearch',
-            'm4.10xlarge.elasticsearch',
-            'c4.large.elasticsearch',
-            'c4.xlarge.elasticsearch',
-            'c4.2xlarge.elasticsearch',
-            'c4.4xlarge.elasticsearch',
-            'c4.8xlarge.elasticsearch',
-            'r3.large.elasticsearch',
-            'r3.xlarge.elasticsearch',
-            'r3.2xlarge.elasticsearch',
-            'r3.4xlarge.elasticsearch',
-            'r3.8xlarge.elasticsearch',
-            'r4.large.elasticsearch',
-            'r4.xlarge.elasticsearch',
-            'r4.2xlarge.elasticsearch',
-            'r4.4xlarge.elasticsearch',
-            'r4.8xlarge.elasticsearch',
-            'r4.16xlarge.elasticsearch',
-            'i2.xlarge.elasticsearch',
-            'i2.2xlarge.elasticsearch',
+            "t3.micro.elasticsearch",
+            "t2.micro.elasticsearch",
+            "t2.small.elasticsearch",
+            "t2.medium.elasticsearch",
+            "m3.medium.elasticsearch",
+            "m3.large.elasticsearch",
+            "m3.xlarge.elasticsearch",
+            "m3.2xlarge.elasticsearch",
+            "m4.large.elasticsearch",
+            "m4.xlarge.elasticsearch",
+            "m4.2xlarge.elasticsearch",
+            "m4.4xlarge.elasticsearch",
+            "m4.10xlarge.elasticsearch",
+            "c4.large.elasticsearch",
+            "c4.xlarge.elasticsearch",
+            "c4.2xlarge.elasticsearch",
+            "c4.4xlarge.elasticsearch",
+            "c4.8xlarge.elasticsearch",
+            "r3.large.elasticsearch",
+            "r3.xlarge.elasticsearch",
+            "r3.2xlarge.elasticsearch",
+            "r3.4xlarge.elasticsearch",
+            "r3.8xlarge.elasticsearch",
+            "r4.large.elasticsearch",
+            "r4.xlarge.elasticsearch",
+            "r4.2xlarge.elasticsearch",
+            "r4.4xlarge.elasticsearch",
+            "r4.8xlarge.elasticsearch",
+            "r4.16xlarge.elasticsearch",
+            "i2.xlarge.elasticsearch",
+            "i2.2xlarge.elasticsearch",
         ],
         ConstraintDescription="must select a valid Elasticsearch instance type.",
     ),
@@ -89,8 +86,8 @@ es_volume_size = template.add_parameter(
         MinValue="10",
         MaxValue="1536",
         Description="Elasticsearch EBS volume size, in GB. Note: maximum volume size varies by instance type; see: "
-                    "http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-limits.html"
-                    "#ebsresource.",
+        "http://docs.aws.amazon.com/elasticsearch-service/latest/developerguide/aes-limits.html"
+        "#ebsresource.",
         Type="Number",
     ),
     group="Elasticsearch",
@@ -98,7 +95,9 @@ es_volume_size = template.add_parameter(
 )
 
 es_condition = "Elasticsearch"
-template.add_condition(es_condition, Not(Equals(Ref(es_instance_type), dont_create_value)))
+template.add_condition(
+    es_condition, Not(Equals(Ref(es_instance_type), dont_create_value))
+)
 
 
 # Create an Elasticsearch domain
@@ -128,16 +127,20 @@ es_domain = template.add_resource(
 
 
 # Output Elasticsearch domain endpoint and ARN
-template.add_output(Output(
-    "ElasticsearchDomainEndpoint",
-    Description="Elasticsearch domain endpoint",
-    Value=GetAtt(es_domain, "DomainEndpoint"),
-    Condition=es_condition,
-))
+template.add_output(
+    Output(
+        "ElasticsearchDomainEndpoint",
+        Description="Elasticsearch domain endpoint",
+        Value=GetAtt(es_domain, "DomainEndpoint"),
+        Condition=es_condition,
+    )
+)
 
-template.add_output(Output(
-    "ElasticsearchDomainArn",
-    Description="Elasticsearch domain ARN",
-    Value=GetAtt(es_domain, "DomainArn"),
-    Condition=es_condition,
-))
+template.add_output(
+    Output(
+        "ElasticsearchDomainArn",
+        Description="Elasticsearch domain ARN",
+        Value=GetAtt(es_domain, "DomainArn"),
+        Condition=es_condition,
+    )
+)

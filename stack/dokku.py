@@ -80,16 +80,11 @@ ssh_cidr = template.add_parameter(
 )
 
 # "20.04 / 18.04 hvm ssd" AMIs from https://cloud-images.ubuntu.com/locator/ec2/
-# "Debian Buster hvm ssd" AMIs from https://wiki.debian.org/Cloud/AmazonEC2Image/Buster
 template.add_mapping(
     "RegionMap",
     {
-        "af-south-1": {"AMI": "ami-0f072aafc9dfcb24f"},  # 20.04 (South Africa)
-        "af-south-1": {"AMI": "ami-0fcf986c07ff1a0c2"},  # 18.04 (South Africa)
-        "eu-central-1": {"AMI": "ami-0932440befd74cdba"},  # 20.04 (Germany)
-        "eu-central-1": {"AMI": "ami-0093cac2bf998a669"},  # 18.04 (Germany)
-        "af-south-1": {"AMI": "ami-04090a79eb0bcb6c1"},  # Debian Buster (South Africa)
-        "eu-central-1": {"AMI": "ami-097411fa8fbfdffda"},  # Debian Buster (Germany)
+        "af-south-1": {"AMI": "ami-01231db8966c15acd"},  # 20.04 (South Africa)
+        "af-south-1": {"AMI": "ami-07d30d5bf2d29a582"},  # 18.04 (South Africa)
     },
 )
 
