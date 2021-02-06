@@ -11,4 +11,4 @@ I forked it in order to customize it to my requirements, which are:
 
 ----
 
-Meanwhile, there's nothing much here, except [this Dokku config (JSON)](dokku-no-nat.json). The `.yaml` version is [here](dokku-no-nat.yaml)
+Meanwhile, there's nothing much here, except [this Dokku Cloudformation stack template (JSON)](dokku-no-nat.json). The `.yaml` version is [here](dokku-no-nat.yaml)
